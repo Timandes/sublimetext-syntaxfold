@@ -1,5 +1,6 @@
 import sublime, sublime_plugin, os, shutil
-
+# view.run_command('toggle_comment')
+# 
 def plugin_loaded():
     if not os.path.exists(sublime.packages_path()+"/User/syntax_fold.sublime-settings"):
         print(sublime.packages_path())
@@ -71,6 +72,12 @@ class FoldAllCommand(sublime_plugin.TextCommand):
                 if self.view.fold(content) == False:
                     new_content = self.view.fold(content)
             self.selection = new_content
+        self.view.run_command('move_to', {"extend": False, "to": "bof"})
+        self.view.run_command('toggle_comment')
+        self.view.run_command('insert', {"characters": "startpos: " + str(startpos) + "\n"})
+        self.view.run_command('toggle_comment')
+        self.view.run_command('insert', {"characters": "endpos: "str(endpos) + "\n"})
+
 
 class UnfoldAllCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -103,6 +110,10 @@ class UnfoldAllCommand(sublime_plugin.TextCommand):
             if content.size() > 0:
                 new_content = self.view.unfold(content)
             self.selection = new_content
+        self.view.run_command('move_to', {"extend": False, "to": "bof"})
+        self.view.run_command('insert', {"characters": str(startpos) + "\n"})
+        self.view.run_command('insert', {"characters": str(endpos) + "\n"})
+        # self.view.run_command('move_to', {"extend": False, "to": "currentposition"})
 
 class FoldCurrentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
